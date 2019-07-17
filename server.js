@@ -10,13 +10,14 @@ nightmare
 .wait('body')
 //.click('button[name="SBForSearch"]
 .click('[name="SBForSearch"]')
-.wait('table')
+.wait('[name="PageSize"]')
 .evaluate(()=>document.getElementsByName('PageSize')[0].value = "Page250") //Set each page to be able to display 250 results
 .evaluate(()=> document.getElementsByName('Update')[0].click()) //update the amount of results returned
-.evaluate(()=>document.getElementsByName("PageNumber")[0].value = 20)//run this step initially and subsequently use page numbers to update
-.evaluate(()=>document.getElementsByName("PageNextAction")[0].click())
-.wait(7000)
 .wait("table tr:nth-child(250)")//wait for the page to load 250 rows
+.click("[name='PageNextAction']")//go to next page
+.wait('input[name="PageNumber"][value="1"]')//wait for the pagenumber to change
+.evaluate(()=>document.querySelector('body'))
+.wait('table')
 .evaluate(()=>document.querySelector('body').innerHTML)
 .end()
 .then(response=> getData(response))
@@ -52,7 +53,7 @@ const getData = (html)=>{
         data.push(item)
     })
 
-    console.log(data[0])
+    console.log(data[249])
 }
 
 function *scrapePage(){
