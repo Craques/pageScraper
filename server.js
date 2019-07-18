@@ -20,6 +20,11 @@ vo(scrapePage)(
     }
 )
 
+/**
+ * @function getHeaders gets the headers that are to be assigned to the webpage details
+ * @param {string} html - the html content of the page
+ * @returns {array} headers - the headings of each page 
+ */
 const getHeaders = (html)=>{
     const $ = cheerio.load(html)
     let headers = []
@@ -31,6 +36,11 @@ const getHeaders = (html)=>{
     return headers
 }
 
+/**
+ * 
+ * @param {string} html - the page to extract the data from
+ * @returns {array} data - an array of all the elements on the search results page
+ */
 const getData = (html)=>{
     const headers = getHeaders(html)
     let data = []
@@ -56,8 +66,32 @@ const getData = (html)=>{
     return data
 }
 
+/**
+ * @function
+ * @param {string} html- the body of the page to extract information from
+ * @returns {object} personal data extracted from the page 
+ * */
+
+const getPersonalData = (html)=>{
+    const $ = cheerio.load(html)
+    let personalData = {}
+    
+    $('.form-group').each((index, element)=>{
+        const propertyKey = $(element).find('label').text()
+        const propertyValue = $(element).find('p').text()
+
+        personalData = {...personalData, [propertyKey]: propertyValue}
+    })
+    
+    return personalData
+}
+
+//uses generator function to be able to capture data on intermediate states, should be able to 
+//should be able to use async await since nightmare is promise based
 function *scrapePage(){
+    console.time("dbsave")
     let websiteData = []
+    let websiteUserData = []
     let totalNumberOfPages = 0
     
 
@@ -79,7 +113,7 @@ function *scrapePage(){
     const lastPageLength = totalNumberOfResults % 250
     
 
-    let n = 250 //should start at -1 so we can get all the results since they start at page 0 
+    let n = 255 //should start at -1 so we can get all the results since they start at page 0 to capture it when next is clicked
     while (n<totalNumberOfPages-1) { 
         let value = (totalNumberOfPages - 2 === n) ? lastPageLength : 250
        
@@ -100,6 +134,20 @@ function *scrapePage(){
         
     }
 
+    //Get personal information from every link generated in the above while loop
+   for(let i = 0; i< websiteData.length; i++){
+        console.log(i)
+        yield nightmare
+        .goto(`https://roi.aib.gov.uk${websiteData[i]['Case Reference Number']}`)
+        .wait('#ExternalLink_AiB')
+        //add logic to extract information from page
+        const body = yield nightmare.evaluate(()=>document.querySelector('body').innerHTML)
+        personalData = getPersonalData(body)
+        websiteUserData = [...websiteUserData, personalData]
+   }
+
     yield nightmare.end()
-    return websiteData
+    console.timeEnd("dbsave")
+    return websiteUserData
+
 } 
