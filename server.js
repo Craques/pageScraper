@@ -41,9 +41,13 @@ const getData = (html)=>{
     //map over each row and get its inner html and set it to the item
     tableRows.each((rowIndex, element)=>{
         let item
+        
         $(element).find('td').each((itemIndex, itemElement)=>{
+            //get link for each row
+            const link =$(itemElement).find('a').attr('href')
             const header = headers[itemIndex]
-            item = {...item, [header]: $(itemElement).text()} 
+            //if the Item has a link use that instead
+            item = {...item, [header]: link ? link : $(itemElement).text()} 
         })
 
         data.push(item)
