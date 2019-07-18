@@ -6,6 +6,7 @@ const nightmare = Nightmare({show: true})
 
 vo(scrapePage)(
     (err, results)=>{
+        console.log(err)
         return null
     }
 )
@@ -45,6 +46,8 @@ const getData = (html)=>{
 
 function *scrapePage(){
     let websiteData = []
+    let totalNumberOfPages = 0
+    
 
     yield nightmare
         .goto(url)
@@ -54,26 +57,35 @@ function *scrapePage(){
         .evaluate(()=>document.getElementsByName('PageSize')[0].value = "Page250") //Set each page to be able to display 250 results
         .evaluate(()=> document.getElementsByName('Update')[0].click()) //update the amount of results returned
         .wait("table tr:nth-child(250)")//wait for the page to load 250 rows
+        
     
-    let n = 0    
-    while (n<3) {
-        if(n === 0){
+    totalNumberOfPages = yield nightmare.evaluate(()=>document.querySelector('[name="TotalNumberOfPages"]').value)
+    //get the number of search results
+    totalNumberOfResultsString = yield nightmare.evaluate(()=>document.querySelector('.text-info > strong').textContent)
+    //Extract the number from the text returned to be used to evaluate the last page
+    totalNumberOfResults = Number(totalNumberOfResultsString.replace(/[^0-9]/g, ''))
+    const lastPageLength = totalNumberOfResults % 250
+    
+
+    let n = 253 //should start at -1 so we can get all the results since they start at page 0 
+    while (n<totalNumberOfPages-1) { 
+        let value = (totalNumberOfPages - 2 === n) ? lastPageLength : 250
+       
+        if(true){
+            console.log(n, value, totalNumberOfPages - 2)
+            yield nightmare
+            .evaluate((n)=>document.querySelector('input[name="PageNumber"]').value = n, n)
+            .evaluate(()=>document.querySelector("[name='PageNextAction']").click())
+            .wait(`input[name="PageNumber"][value="${n + 1}"]`)
+            .wait(`table tr:nth-child(${value})`) //condition has to be changed depending on whether or not we are on last page
+        
             const page = yield nightmare.evaluate(()=>document.querySelector('body').innerHTML)
             const data = getData(page)
             websiteData = [...websiteData, ...data]
         }
-        
-        //goto nextpage
-         if(n>0 ){
-             yield nightmare.click("[name='PageNextAction']")
-            .wait(`input[name="PageNumber"][value="${n}"]`)
-            .wait("table tr:nth-child(250)") //condition has to be changed depending on whether or not we are on last page
-        
-            const page = yield nightmare.evaluate(()=>document.querySelector('body').innerHTML)
-            const data = getData(page)
-            websiteData = [...websiteData, ...data]
-        }
+        nextExists = yield nightmare.visible("[name='PageNextAction'].disabled")
         n++
+        
     }
     
     console.log(websiteData.length)
