@@ -3,11 +3,20 @@ const cheerio = require('cheerio')
 const vo = require('vo')
 const url = 'https://roi.aib.gov.uk/roi/PublicSearches/PublicSearch/'
 const nightmare = Nightmare({show: true})
+const ObjectsToCsv = require('objects-to-csv')
 
 vo(scrapePage)(
     (err, results)=>{
         console.log(err)
-        return null
+        if(results){
+            (async()=>{
+                const csv = new ObjectsToCsv(results)
+                await csv.toDisk('./secondTry')
+                console.log('I am done')
+            })()
+        }else if(err){
+            console.log(Error)
+        }
     }
 )
 
@@ -40,7 +49,6 @@ const getData = (html)=>{
         data.push(item)
     })
 
-    console.log(data[0], data.length)
     return data
 }
 
@@ -67,7 +75,7 @@ function *scrapePage(){
     const lastPageLength = totalNumberOfResults % 250
     
 
-    let n = 253 //should start at -1 so we can get all the results since they start at page 0 
+    let n = 250 //should start at -1 so we can get all the results since they start at page 0 
     while (n<totalNumberOfPages-1) { 
         let value = (totalNumberOfPages - 2 === n) ? lastPageLength : 250
        
@@ -87,7 +95,7 @@ function *scrapePage(){
         n++
         
     }
-    
-    console.log(websiteData.length)
+
     yield nightmare.end()
+    return websiteData
 } 
