@@ -151,3 +151,5 @@ function *scrapePage(){
     return websiteUserData
 
 } 
+
+module.exports = {scrapePage}

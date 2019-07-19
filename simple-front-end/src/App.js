@@ -1,11 +1,12 @@
 import React from 'react';
 import './App.css';
 import {Button, Toolbar, AppBar, Typography} from '@material-ui/core'
+import axios from 'axios'
 
-const getInformation = ()=>{
+const getInformation = async ()=>{
   console.log('I was pressed')
+  const response = await axios.post('http://localhost:1234')
 }
-
 function App() {
   return (
     <div>
