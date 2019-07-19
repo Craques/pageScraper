@@ -5,20 +5,7 @@ const url = 'https://roi.aib.gov.uk/roi/PublicSearches/PublicSearch/'
 const nightmare = Nightmare({show: true})
 const ObjectsToCsv = require('objects-to-csv')
 
-vo(scrapePage)(
-    (err, results)=>{
-        console.log(err)
-        if(results){
-            (async()=>{
-                const csv = new ObjectsToCsv(results)
-                await csv.toDisk('./secondTry')
-                console.log('I am done')
-            })()
-        }else if(err){
-            console.log(Error)
-        }
-    }
-)
+
 
 /**
  * @function getHeaders gets the headers that are to be assigned to the webpage details
