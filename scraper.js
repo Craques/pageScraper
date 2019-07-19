@@ -118,7 +118,7 @@ function *scrapePage(){
     }
 
     //Get personal information from every link generated in the above while loop
-   for(let i = 0; i< 10; i++){
+   for(let i = 0; i< websiteData.length; i++){
         console.log(i)
         yield nightmare
         .goto(`https://roi.aib.gov.uk${websiteData[i]['Case Reference Number']}`)

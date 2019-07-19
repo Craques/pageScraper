@@ -3,33 +3,26 @@ const cors = require('cors')
 const app = express()
 const {scrapePage} = require('./scraper')
 const vo =require('vo')
+const co = require('co')
 const ObjectsToCsv = require('objects-to-csv')
 
 app.use(cors())
 
-app.post('/', (req, res)=>{
+app.post('/', async (req, res)=>{
     console.log('I have been hit')
-    //scrapePage()
-    res.status(200).download(__dirname + '/secondTry')
-    //res.download(__dirname, + '/secondTry')
-    // vo(scrapePage)(
-    //     (err, results)=>{
-    //         console.log(err)
-    //         if(results){
-    //             (async()=>{
-    //                 const csv = new ObjectsToCsv(results)
-    //                 await csv.toDisk('./secondTry')
-    //                 console.log('I am done')
-    //                 //res.sendFile(__dirname + '/secondTry')
-    //                 res.download(__dirname + '/secondTry')
-    //                 //res.json({wata: 'I am worrking boy'})
-    //             })()
-    //         }else if(err){
-    //             console.log(err)
-    //         }
-    //     }
-    // )
-    //res.status(200).send('Hello there')
+    const results = await co(scrapePage)
+
+    if(results){
+        return (async()=>{
+            const csv = new ObjectsToCsv(results)
+            await csv.toDisk('./secondTry')
+            console.log('I am done')
+            //res.sendFile(__dirname + '/secondTry')
+            res.download(__dirname + '/secondTry')
+        })()
+    }
+
+    return res.status(400).send('There was an error')
 })
 
 const port = process.env.port || 1234
