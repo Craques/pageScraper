@@ -11,7 +11,7 @@ app.use(cors())
 app.post('/', async (req, res)=>{
     console.log('I have been hit')
     const results = await co(scrapePage)
-
+    console.log('I got here again')
     if(results){
         return (async()=>{
             const csv = new ObjectsToCsv(results)

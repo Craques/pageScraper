@@ -1,7 +1,7 @@
 const Nightmare = require('nightmare')
 const cheerio = require('cheerio')
 const url = 'https://roi.aib.gov.uk/roi/PublicSearches/PublicSearch/'
-const nightmare = Nightmare({show: true})
+
 
 /**
  * @function getHeaders gets the headers that are to be assigned to the webpage details
@@ -73,6 +73,7 @@ const getPersonalData = (html)=>{
 //should be able to use async await since nightmare is promise based
 function *scrapePage(){
     //console.time("dbsave")
+    const nightmare = Nightmare({show: true})
     let websiteData = []
     let websiteUserData = []
     let totalNumberOfPages = 0
