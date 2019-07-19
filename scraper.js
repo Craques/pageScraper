@@ -1,11 +1,7 @@
 const Nightmare = require('nightmare')
 const cheerio = require('cheerio')
-const vo = require('vo')
 const url = 'https://roi.aib.gov.uk/roi/PublicSearches/PublicSearch/'
 const nightmare = Nightmare({show: true})
-const ObjectsToCsv = require('objects-to-csv')
-
-
 
 /**
  * @function getHeaders gets the headers that are to be assigned to the webpage details
@@ -76,7 +72,7 @@ const getPersonalData = (html)=>{
 //uses generator function to be able to capture data on intermediate states, should be able to 
 //should be able to use async await since nightmare is promise based
 function *scrapePage(){
-    console.time("dbsave")
+    //console.time("dbsave")
     let websiteData = []
     let websiteUserData = []
     let totalNumberOfPages = 0
@@ -100,8 +96,8 @@ function *scrapePage(){
     const lastPageLength = totalNumberOfResults % 250
     
 
-    let n = 0 //should start at -1 so we can get all the results since they start at page 0 to capture it when next is clicked
-    while (n<20-1) { 
+    let n = 255 //should start at -1 so we can get all the results since they start at page 0 to capture it when next is clicked
+    while (n<totalNumberOfPages-1) { 
         let value = (totalNumberOfPages - 2 === n) ? lastPageLength : 250
        
         if(true){
@@ -122,7 +118,7 @@ function *scrapePage(){
     }
 
     //Get personal information from every link generated in the above while loop
-   for(let i = 0; i< websiteData.length; i++){
+   for(let i = 0; i< 10; i++){
         console.log(i)
         yield nightmare
         .goto(`https://roi.aib.gov.uk${websiteData[i]['Case Reference Number']}`)
@@ -134,7 +130,7 @@ function *scrapePage(){
    }
 
     yield nightmare.end()
-    console.timeEnd("dbsave")
+    //console.timeEnd("dbsave")
     return websiteUserData
 
 } 

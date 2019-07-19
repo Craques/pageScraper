@@ -10,21 +10,26 @@ app.use(cors())
 app.post('/', (req, res)=>{
     console.log('I have been hit')
     //scrapePage()
-    vo(scrapePage)(
-        (err, results)=>{
-            console.log(err)
-            if(results){
-                (async()=>{
-                    const csv = new ObjectsToCsv(results)
-                    await csv.toDisk('./secondTry')
-                    console.log('I am done')
-                })()
-            }else if(err){
-                console.log(Error)
-            }
-        }
-    )
-    res.status(200).send('Hello there')
+    res.status(200).download(__dirname + '/secondTry')
+    //res.download(__dirname, + '/secondTry')
+    // vo(scrapePage)(
+    //     (err, results)=>{
+    //         console.log(err)
+    //         if(results){
+    //             (async()=>{
+    //                 const csv = new ObjectsToCsv(results)
+    //                 await csv.toDisk('./secondTry')
+    //                 console.log('I am done')
+    //                 //res.sendFile(__dirname + '/secondTry')
+    //                 res.download(__dirname + '/secondTry')
+    //                 //res.json({wata: 'I am worrking boy'})
+    //             })()
+    //         }else if(err){
+    //             console.log(err)
+    //         }
+    //     }
+    // )
+    //res.status(200).send('Hello there')
 })
 
 const port = process.env.port || 1234
