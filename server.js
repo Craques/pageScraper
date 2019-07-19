@@ -113,8 +113,8 @@ function *scrapePage(){
     const lastPageLength = totalNumberOfResults % 250
     
 
-    let n = 255 //should start at -1 so we can get all the results since they start at page 0 to capture it when next is clicked
-    while (n<totalNumberOfPages-1) { 
+    let n = 0 //should start at -1 so we can get all the results since they start at page 0 to capture it when next is clicked
+    while (n<20-1) { 
         let value = (totalNumberOfPages - 2 === n) ? lastPageLength : 250
        
         if(true){
