@@ -9,8 +9,8 @@ function App() {
   const [state, setState] = useState({
       displayDownLoadButton: false,
       downloadUrl: null
-  })
-
+  }) 
+  
   const getInformation = async ()=>{
     console.log('I was pressed')
     const response = await axios.post('http://localhost:1234')
