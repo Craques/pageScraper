@@ -10,19 +10,18 @@ app.use(cors())
 
 app.post('/', async (req, res)=>{
     console.log('I have been hit')
-    const results = await co(scrapePage)
-    console.log('I got here again')
-    if(results){
-        return (async()=>{
-            const csv = new ObjectsToCsv(results)
+    co(scrapePage).then((response)=>{
+        (async()=>{
+            const csv = new ObjectsToCsv(response)
             await csv.toDisk('./secondTry')
             console.log('I am done')
             //res.sendFile(__dirname + '/secondTry')
             res.download(__dirname + '/secondTry')
-        })()
-    }
-
-    return res.status(400).send('There was an error')
+        })()  
+    }).catch((error)=>{
+        res.send(error)
+        console.log(error)
+    })
 })
 
 const port = process.env.port || 1234

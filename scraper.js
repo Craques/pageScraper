@@ -97,7 +97,7 @@ function *scrapePage(){
     const lastPageLength = totalNumberOfResults % 250
     
 
-    let n = 255 //should start at -1 so we can get all the results since they start at page 0 to capture it when next is clicked
+    let n = 254 //should start at -1 so we can get all the results since they start at page 0 to capture it when next is clicked
     while (n<totalNumberOfPages-1) { 
         let value = (totalNumberOfPages - 2 === n) ? lastPageLength : 250
        
@@ -119,7 +119,8 @@ function *scrapePage(){
     }
 
     //Get personal information from every link generated in the above while loop
-   for(let i = 0; i< websiteData.length; i++){
+    const endCondition = websiteData.length
+   for(let i = 0; i< 3; i++){
         console.log(i)
         yield nightmare
         .goto(`https://roi.aib.gov.uk${websiteData[i]['Case Reference Number']}`)
