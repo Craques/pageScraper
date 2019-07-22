@@ -1,4 +1,4 @@
-### How to run this scrapper
+# How to run this scrapper
 
 ## Setup
 
